@@ -8,12 +8,19 @@ input: [100, 80, 60, 70, 60, 75
 , 85]
 output: [1, 1, 1, 2, 1, 4, 6]
 '''
+from inspect import stack
+
+
 def stockSpan(prices):
-    stack = []
-    span = 0 * len(prices) # initialize span array with 0s
-    for i in range(len(prices)):
-        while stack and prices[i] >= prices[stack[-1]]: # check if current price is greater than or equal to price at index on top of stack
-            stack.pop() # pop indices of days with lower prices
-        span[i] = i + 1 if not stack else i - stack[-1] # calculate span based on current index and index of last higher price
-        stack.append(i) # add current index to stack
+    span = 1 # initialize span for the first day
+    while stack and prices[stack[-1][0]] <= prices: # check if current price is greater than or equal to price at index on top of stack
+        span += stack.pop()[1] # add the span of the previous day to the current span
+    stack.append((prices, span)) # add current index and span to stack
     return span
+example = [100, 80, 60, 70, 60, 75, 85]
+stack = [] # store tuples of (index, span)
+print([stockSpan(price) for i, price in enumerate(example)])
+# Output: [1, 1, 1, 2, 1, 4, 6]
+'''TC: O(n) because each element is pushed and popped at most once
+SC: O(n) because in worst case all elements are in stack (e.g. strictly increasing prices)
+'''
